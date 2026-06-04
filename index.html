@@ -151,6 +151,7 @@
       height: 3px;
       background-color: #1E2522;
       border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
     }
 
     .social-icons-mobile {
@@ -747,6 +748,15 @@
   <header class="navbar">
     <div class="nav-container">
       
+      <!-- Checkbox input placed right at the top level of container for css sibling selector rule -->
+      <input type="checkbox" id="menu-toggle-open" class="menu-toggle">
+
+      <label for="menu-toggle-open" class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+
       <div class="logo-brand">
         <div class="social-icons">
           <a href="https://www.facebook.com/profile.php?id=61571221393079" target="_blank"><i class="fab fa-facebook-f"></i></a>
@@ -760,14 +770,6 @@
         <h1>WALELGN</h1>
         <h2>PROPERTIES</h2>
       </div>
-
-      <input type="checkbox" id="menu-toggle-open" class="menu-toggle">
-
-      <label for="menu-toggle-open" class="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-      </label>
 
       <div class="social-icons-mobile">
         <a href="https://www.facebook.com/profile.php?id=61571221393079" target="_blank"><i class="fab fa-facebook-f"></i></a>
@@ -787,7 +789,7 @@
 
   <main class="hero-section" id="home">
     <div class="hero-image-container">
-      <img src="headshot.jpg" alt="Walelgn Properties Professional" class="hero-img">
+      <img src="headshot.png" alt="Walelgn Properties Professional" class="hero-img">
     </div>
     
     <div class="hero-content">
@@ -1045,6 +1047,15 @@
         if (card && !card.contains(event.target)) {
           chk.checked = false;
         }
+      });
+    });
+
+    // Mobile navigation links click event handler to auto-close menu panel
+    const menuLinks = document.querySelectorAll('#navLinksMenu a');
+    menuLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        const menuToggle = document.getElementById('menu-toggle-open');
+        if (menuToggle) menuToggle.checked = false;
       });
     });
   </script>
