@@ -113,10 +113,6 @@
       margin-top: 5px;
     }
 
-    .menu-toggle {
-      display: none !important;
-    }
-
     .nav-links {
       display: flex;
       flex: 1;
@@ -143,6 +139,7 @@
       cursor: pointer;
       flex-direction: column;
       gap: 5px;
+      z-index: 101;
     }
 
     .hamburger span {
@@ -152,6 +149,17 @@
       background-color: #1E2522;
       border-radius: 2px;
       transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* Animated open states for the custom javascript toggle */
+    .hamburger.is-active span:nth-child(1) {
+      transform: translateY(8px) rotate(45deg);
+    }
+    .hamburger.is-active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.is-active span:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg);
     }
 
     .social-icons-mobile {
@@ -632,7 +640,7 @@
 
       .hamburger {
         display: flex !important;
-        z-index: 100;
+        margin-left: 0;
         order: -1; 
       }
 
@@ -656,7 +664,7 @@
       }
 
       .nav-links {
-        display: none !important;
+        display: none;
         flex-direction: column;
         position: absolute;
         top: 100%;
@@ -670,6 +678,11 @@
         box-shadow: 0 10px 15px rgba(0,0,0,0.02);
       }
 
+      /* Class applied via javascript execution */
+      .nav-links.is-open {
+        display: flex !important;
+      }
+
       .nav-links a {
         margin: 15px 0;
         display: block;
@@ -677,20 +690,6 @@
         letter-spacing: 2px;
         margin-left: 0;
         color: #1E2522;
-      }
-
-      #menu-toggle-open:checked ~ .nav-links {
-        display: flex !important;
-      }
-      
-      #menu-toggle-open:checked ~ .hamburger span:nth-child(1) {
-        transform: translateY(8px) rotate(45deg);
-      }
-      #menu-toggle-open:checked ~ .hamburger span:nth-child(2) {
-        opacity: 0;
-      }
-      #menu-toggle-open:checked ~ .hamburger span:nth-child(3) {
-        transform: translateY(-8px) rotate(-45deg);
       }
 
       .hero-section {
@@ -747,15 +746,13 @@
 
   <header class="navbar">
     <div class="nav-container">
-      
-      <!-- Checkbox input placed right at the top level of container for css sibling selector rule -->
-      <input type="checkbox" id="menu-toggle-open" class="menu-toggle">
 
-      <label for="menu-toggle-open" class="hamburger">
+      <!-- Trigger icon button configured for direct JS script handling -->
+      <div class="hamburger" id="hamburgerMenuBtn">
         <span></span>
         <span></span>
         <span></span>
-      </label>
+      </div>
 
       <div class="logo-brand">
         <div class="social-icons">
@@ -789,7 +786,7 @@
 
   <main class="hero-section" id="home">
     <div class="hero-image-container">
-      <img src="headshot.png" alt="Walelgn Properties Professional" class="hero-img">
+      <img src="headshot.jpg" alt="Walelgn Properties Professional" class="hero-img">
     </div>
     
     <div class="hero-content">
@@ -1028,19 +1025,29 @@
     </div>
   </footer>
 
-  <!-- Smart Click-Away Dismissal Script -->
+  <!-- Smart Click-Away Dismissal and Navigation Script -->
   <script>
+    const hamburgerBtn = document.getElementById('hamburgerMenuBtn');
+    const navLinksMenu = document.getElementById('navLinksMenu');
+
+    // Toggle menu open/close on click
+    hamburgerBtn.addEventListener('click', function(event) {
+      event.stopPropagation(); // Stops immediate document click firing
+      hamburgerBtn.classList.toggle('is-active');
+      navLinksMenu.classList.toggle('is-open');
+    });
+
+    // Handle clicks across document
     document.addEventListener('click', function(event) {
-      // 1. Close mobile hamburger menu if clicking outside
-      const menuToggle = document.getElementById('menu-toggle-open');
-      const navLinks = document.getElementById('navLinksMenu');
-      const hamburger = document.querySelector('.hamburger');
-      
-      if (menuToggle && menuToggle.checked && !navLinks.contains(event.target) && !hamburger.contains(event.target)) {
-        menuToggle.checked = false;
+      // 1. Close mobile panel menu if open and user clicks outside of it
+      if (navLinksMenu.classList.contains('is-open')) {
+        if (!navLinksMenu.contains(event.target) && !hamburgerBtn.contains(event.target)) {
+          hamburgerBtn.classList.remove('is-active');
+          navLinksMenu.classList.remove('is-open');
+        }
       }
 
-      // 2. Close any open "View Details" dropdown if clicking outside that card
+      // 2. Close any open "View Details" dropdown card panels if clicking outside card boundary
       const openDetails = document.querySelectorAll('.individual-detail-toggle:checked');
       openDetails.forEach(function(chk) {
         const card = chk.closest('.property-card');
@@ -1050,12 +1057,12 @@
       });
     });
 
-    // Mobile navigation links click event handler to auto-close menu panel
-    const menuLinks = document.querySelectorAll('#navLinksMenu a');
-    menuLinks.forEach(function(link) {
+    // Auto-close overlay when link targets are tapped
+    const mobileLinks = navLinksMenu.querySelectorAll('a');
+    mobileLinks.forEach(function(link) {
       link.addEventListener('click', function() {
-        const menuToggle = document.getElementById('menu-toggle-open');
-        if (menuToggle) menuToggle.checked = false;
+        hamburgerBtn.classList.remove('is-active');
+        navLinksMenu.classList.remove('is-open');
       });
     });
   </script>
